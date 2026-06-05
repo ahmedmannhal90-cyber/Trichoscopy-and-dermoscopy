@@ -19,7 +19,7 @@ exports.handler = async (event) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "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",
+        "x-api-key": "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",
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
