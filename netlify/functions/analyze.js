@@ -1,9 +1,36 @@
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return {
+      statusCode: 405,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: { message: "Method not allowed" } }),
+    };
   }
   try {
     const body = JSON.parse(event.body);
+
+    // Resize images to reduce payload size
+    const messages = body.messages.map(msg => {
+      if (Array.isArray(msg.content)) {
+        return {
+          ...msg,
+          content: msg.content.map(block => {
+            if (block.type === "image") {
+              return {
+                ...block,
+                source: {
+                  ...block.source,
+                  data: block.source.data.substring(0, 500000)
+                }
+              };
+            }
+            return block;
+          })
+        };
+      }
+      return msg;
+    });
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -14,14 +41,15 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         model: "claude-haiku-4-5",
         max_tokens: 1500,
-        messages: body.messages,
+        messages: messages,
       }),
     });
-    const data = await response.json();
+
+    const text = await response.text();
     return {
       statusCode: 200,
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: text,
     };
   } catch (err) {
     return {
