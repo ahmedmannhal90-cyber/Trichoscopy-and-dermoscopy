@@ -1,15 +1,4 @@
 exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-      body: "",
-    };
-  }
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -19,7 +8,7 @@ exports.handler = async (event) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "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",
+        "x-api-key": "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",
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
